@@ -20,7 +20,7 @@ class myPlayerBook(PlayerInterface):
         self._move_history = []
 
     def getPlayerName(self):
-        return "Random Player"
+        return "Player V2"
 
     def getPlayerMove(self):
         if self._board.is_game_over():

@@ -7,8 +7,10 @@ import sys
 def localGame(players):
     
     b = Reversi.Board(10)
-
+    
+    players[0].__init__()
     players[0].newGame(b._BLACK)
+    players[1].__init__()
     players[1].newGame(b._WHITE)
     totalTime = [0,0] # total real time for each player
     nextplayer = 0
