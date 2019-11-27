@@ -1,22 +1,15 @@
 import Reversi
-import myPlayer
-import RandomPlayer
+
 import time
 from io import StringIO
 import sys
 
-def localGame():
+def localGame(players):
     
     b = Reversi.Board(10)
 
-    players = []
-    player1 = myPlayer.myPlayer()
-    player1.newGame(b._BLACK)
-    players.append(player1)
-    player2 = RandomPlayer.RandomPlayer()
-    player2.newGame(b._WHITE)
-    players.append(player2)
-
+    players[0].newGame(b._BLACK)
+    players[1].newGame(b._WHITE)
     totalTime = [0,0] # total real time for each player
     nextplayer = 0
     nextplayercolor = b._BLACK

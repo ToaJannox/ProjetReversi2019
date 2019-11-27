@@ -7,13 +7,17 @@ import Reversi
 import sys
 from random import randint
 from playerInterface import *
+import OpeningBook
 
 
-class myPlayer(PlayerInterface):
+class myPlayerBook(PlayerInterface):
 
     def __init__(self):
         self._board = Reversi.Board(10)
         self._mycolor = None
+        self._opening_book = OpeningBook.OpeningBook()
+        self._OB_active = True
+        self._move_history = []
 
     def getPlayerName(self):
         return "Random Player"
@@ -32,16 +36,21 @@ class myPlayer(PlayerInterface):
         assert (c == self._mycolor)
         print("My current board :")
         print(self._board)
+
+        self._move_history.append(move)  # Add player's move to history
         return (x, y)
 
     def playOpponentMove(self, x, y):
         assert (self._board.is_valid_move(self._opponent, x, y))
         print("Opponent played ", (x, y))
+
+        self._move_history.append([self._opponent, x, y])  # Add opponent's move to history
         self._board.push([self._opponent, x, y])
 
     def newGame(self, color):
         self._mycolor = color
         self._opponent = 1 if color == 2 else 2
+        self._opening_book.init(self._board.get_board_size())
 
     def endGame(self, winner):
         if self._mycolor == winner:
@@ -62,7 +71,7 @@ class myPlayer(PlayerInterface):
             self._board.push(m)
             (_, x, y) = m
             if [x, y] in corners:
-                max_value = max(max_value, Evaluator.eval(self._board, myPlayer))
+                max_value = max(max_value, Evaluator.eval(self._board, myPlayerBook))
                 best_move = m
             self._board.pop()
 
@@ -75,7 +84,7 @@ class myPlayer(PlayerInterface):
         for m in self._board.legal_moves():
             self._board.push(m)
             if not self._board.at_least_one_legal_move(self._opponent):
-                max_value = max(max_value, Evaluator.eval(self._board, myPlayer))
+                max_value = max(max_value, Evaluator.eval(self._board, myPlayerBook))
                 best_move = m
             self._board.pop()
 
@@ -83,6 +92,12 @@ class myPlayer(PlayerInterface):
             return best_move
 
         # Opening move
+        if self._OB_active:
+            move = self._opening_book.get_following_move(self._move_history)
+            if move is not None:
+                return move
+            #  Else
+            self._OB_active = False
 
         # minimax
         return self._start_minimax(3)
