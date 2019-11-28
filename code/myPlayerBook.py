@@ -71,7 +71,7 @@ class myPlayerBook(PlayerInterface):
             self._board.push(m)
             (_, x, y) = m
             if [x, y] in corners:
-                max_value = max(max_value, Evaluator.eval(self._board, myPlayerBook))
+                max_value = max(max_value, Evaluator.eval(self._board, self._mycolor))
                 best_move = m
             self._board.pop()
 
@@ -84,7 +84,7 @@ class myPlayerBook(PlayerInterface):
         for m in self._board.legal_moves():
             self._board.push(m)
             if not self._board.at_least_one_legal_move(self._opponent):
-                max_value = max(max_value, Evaluator.eval(self._board, myPlayerBook))
+                max_value = max(max_value, Evaluator.eval(self._board, self._mycolor))
                 best_move = m
             self._board.pop()
 
