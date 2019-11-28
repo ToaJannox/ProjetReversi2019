@@ -2,11 +2,11 @@ from localGame import *
 import myPlayer
 import myPlayerBook
 import RandomPlayer
-from itertools import combinations
+from itertools import permutations
 
 def benchmark(n,players):
     
-    matches = list(combinations(players,2))
+    matches = list(permutations(players,2))
     data = []
     for match in matches:       
         print(match[0].getPlayerName()," vs ",match[1].getPlayerName())
@@ -37,6 +37,7 @@ def benchmark(n,players):
         print("Draw %d %% (%d) of the time" % (drawRate,draws))
         print("===============================")
 
+    
 n = 1
 
 playerRand = RandomPlayer.RandomPlayer()
@@ -47,6 +48,5 @@ players = []
 
 players.append(playerV1)
 players.append(playerV2)
-players.append(playerRand)
 
 benchmark(n,players)
