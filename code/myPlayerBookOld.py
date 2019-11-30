@@ -10,7 +10,7 @@ from playerInterface import *
 import OpeningBook
 
 
-class myPlayerBook(PlayerInterface):
+class myPlayerBookOld(PlayerInterface):
 
     def __init__(self):
         self._board = Reversi.Board(10)
@@ -100,7 +100,7 @@ class myPlayerBook(PlayerInterface):
             self._OB_active = False
 
         # minimax
-        return self._start_negamax(3)
+        return self._start_minimax(3)
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()
@@ -111,7 +111,7 @@ class myPlayerBook(PlayerInterface):
         else:
             return 0
 
-    def _start_negamax(self, depth):
+    def _start_minimax(self, depth):
         if self._board.is_game_over():
             return None
 
@@ -119,7 +119,7 @@ class myPlayerBook(PlayerInterface):
         best_move = None
         for m in self._board.legal_moves():
             self._board.push(m)
-            value = -self._minimax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
+            value = self._minimax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
             if value > maxx:
                 maxx = value
                 best_move = m
@@ -127,7 +127,7 @@ class myPlayerBook(PlayerInterface):
 
         return best_move
 
-    def _negamax(self, depth, player, alpha, beta):
+    def _minimax(self, depth, player, alpha, beta):
         # If game is over or depth limit reached
         if depth == 0 or self._board.is_game_over():
             return Evaluator.eval(self._board, self._mycolor)
@@ -137,14 +137,23 @@ class myPlayerBook(PlayerInterface):
             p = 2 if player == 1 else 1
             return self._minimax(depth - 1, p, alpha, beta)
 
-        color = self._board._flip(player)
-
-        value = - sys.maxsize - 1
-        for m in self._board.legal_moves():
-            self._board.push(m)
-            value = max(value, -self._minimax(depth - 1, color, -alpha, -beta))
-            self._board.pop()
-            if value >= beta:
-                break  # Cutoff
-            alpha = max(alpha, value)
-        return value
+        if player == self._mycolor:  # Player turn
+            value = - sys.maxsize - 1
+            for m in self._board.legal_moves():
+                self._board.push(m)
+                value = max(value, self._minimax(depth - 1, self._opponent, alpha, beta))
+                self._board.pop()
+                if value >= beta:
+                    break  # Cutoff
+                alpha = max(alpha, value)
+            return value
+        else:  # Opponent turn
+            value = sys.maxsize
+            for m in self._board.legal_moves():
+                self._board.push(m)
+                value = min(value, self._minimax(depth - 1, self._mycolor, alpha, beta))
+                self._board.pop()
+                if alpha >= value:
+                    break  # Cutoff
+                beta = min(beta, value)
+            return value

@@ -7,20 +7,16 @@ import Reversi
 import sys
 from random import randint
 from playerInterface import *
-import OpeningBook
 
 
-class myPlayerBook(PlayerInterface):
+class myPlayerOld(PlayerInterface):
 
     def __init__(self):
         self._board = Reversi.Board(10)
         self._mycolor = None
-        self._opening_book = OpeningBook.OpeningBook()
-        self._OB_active = True
-        self._move_history = []
 
     def getPlayerName(self):
-        return "Player V2"
+        return "Player V1"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
@@ -36,21 +32,16 @@ class myPlayerBook(PlayerInterface):
         assert (c == self._mycolor)
         print("My current board :")
         print(self._board)
-
-        self._move_history.append(move)  # Add player's move to history
         return (x, y)
 
     def playOpponentMove(self, x, y):
         assert (self._board.is_valid_move(self._opponent, x, y))
         print("Opponent played ", (x, y))
-
-        self._move_history.append([self._opponent, x, y])  # Add opponent's move to history
         self._board.push([self._opponent, x, y])
 
     def newGame(self, color):
         self._mycolor = color
         self._opponent = 1 if color == 2 else 2
-        self._opening_book.init(self._board.get_board_size())
 
     def endGame(self, winner):
         if self._mycolor == winner:
@@ -92,15 +83,9 @@ class myPlayerBook(PlayerInterface):
             return best_move
 
         # Opening move
-        if self._OB_active:
-            move = self._opening_book.get_following_move(self._move_history)
-            if move is not None:
-                return move
-            #  Else
-            self._OB_active = False
 
         # minimax
-        return self._start_negamax(3)
+        return self._start_minimax(3)
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()
@@ -111,7 +96,7 @@ class myPlayerBook(PlayerInterface):
         else:
             return 0
 
-    def _start_negamax(self, depth):
+    def _start_minimax(self, depth):
         if self._board.is_game_over():
             return None
 
@@ -119,7 +104,7 @@ class myPlayerBook(PlayerInterface):
         best_move = None
         for m in self._board.legal_moves():
             self._board.push(m)
-            value = -self._minimax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
+            value = self._minimax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
             if value > maxx:
                 maxx = value
                 best_move = m
@@ -127,7 +112,7 @@ class myPlayerBook(PlayerInterface):
 
         return best_move
 
-    def _negamax(self, depth, player, alpha, beta):
+    def _minimax(self, depth, player, alpha, beta):
         # If game is over or depth limit reached
         if depth == 0 or self._board.is_game_over():
             return Evaluator.eval(self._board, self._mycolor)
@@ -137,14 +122,23 @@ class myPlayerBook(PlayerInterface):
             p = 2 if player == 1 else 1
             return self._minimax(depth - 1, p, alpha, beta)
 
-        color = self._board._flip(player)
-
-        value = - sys.maxsize - 1
-        for m in self._board.legal_moves():
-            self._board.push(m)
-            value = max(value, -self._minimax(depth - 1, color, -alpha, -beta))
-            self._board.pop()
-            if value >= beta:
-                break  # Cutoff
-            alpha = max(alpha, value)
-        return value
+        if player == self._mycolor:  # Player turn
+            value = - sys.maxsize - 1
+            for m in self._board.legal_moves():
+                self._board.push(m)
+                value = max(value, self._minimax(depth - 1, self._opponent, alpha, beta))
+                self._board.pop()
+                if value >= beta:
+                    break  # Cutoff
+                alpha = max(alpha, value)
+            return value
+        else:  # Opponent turn
+            value = sys.maxsize
+            for m in self._board.legal_moves():
+                self._board.push(m)
+                value = min(value, self._minimax(depth - 1, self._mycolor, alpha, beta))
+                self._board.pop()
+                if alpha >= value:
+                    break  # Cutoff
+                beta = min(beta, value)
+            return value
