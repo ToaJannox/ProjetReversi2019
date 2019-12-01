@@ -84,8 +84,8 @@ class myPlayer(PlayerInterface):
 
         # Opening move
 
-        # minimax
-        return self._start_negamax(3)
+        # negamax
+        return self._start_negamax(2)
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()
@@ -104,7 +104,7 @@ class myPlayer(PlayerInterface):
         best_move = None
         for m in self._board.legal_moves():
             self._board.push(m)
-            value = -self._minimax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
+            value = -self._negamax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
             if value > maxx:
                 maxx = value
                 best_move = m
@@ -115,19 +115,18 @@ class myPlayer(PlayerInterface):
     def _negamax(self, depth, player, alpha, beta):
         # If game is over or depth limit reached
         if depth == 0 or self._board.is_game_over():
-            return Evaluator.eval(self._board, self._mycolor)
-
-        # If player cannot move
-        if not self._board.at_least_one_legal_move(player):
-            p = 2 if player == 1 else 1
-            return self._minimax(depth - 1, p, alpha, beta)
+            return Evaluator.eval(self._board, self._mycolor) * (-1 if player != self._mycolor else 1)
 
         color = self._board._flip(player)
+
+        # If player cannot move, opponent turn
+        if not self._board.at_least_one_legal_move(player):
+            return -self._negamax(depth - 1, color, -beta, -alpha)
 
         value = - sys.maxsize - 1
         for m in self._board.legal_moves():
             self._board.push(m)
-            value = max(value, -self._minimax(depth - 1, color, -alpha, -beta))
+            value = max(value, -self._negamax(depth - 1, color, -beta, -alpha))
             self._board.pop()
             if value >= beta:
                 break  # Cutoff
