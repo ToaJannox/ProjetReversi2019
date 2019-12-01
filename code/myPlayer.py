@@ -128,7 +128,7 @@ class myPlayer(PlayerInterface):
             self._board.push(m)
             value = max(value, -self._negamax(depth - 1, color, -beta, -alpha))
             self._board.pop()
-            if value >= beta:
-                break  # Cutoff
             alpha = max(alpha, value)
+            if alpha >= beta:
+                break  # Cutoff
         return value
