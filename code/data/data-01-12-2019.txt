@@ -1,0 +1,132 @@
+On the 01-12-2019 12:16:33
+===[Results of Player V2 : MiniMax + Book vs Player V2 : MiniMax + Book]===
+Player V2 : MiniMax + Book won 50 % (1) of the time
+Player V2 : MiniMax + Book won 50 % (1) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Player V2 : MiniMax + Book vs Player V2 : MiniMax + Book]===
+Player V2 : MiniMax + Book won 50 % (1) of the time
+Player V2 : MiniMax + Book won 50 % (1) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 01-12-2019 12:18:08
+===[Results of Player V2 : MiniMax + Book vs Player V3 : Nega+Book]===
+Player V2 : MiniMax + Book won 50 % (1) of the time
+Player V3 : Nega+Book won 50 % (1) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Player V3 : Nega+Book vs Player V2 : MiniMax + Book]===
+Player V3 : Nega+Book won 0 % (0) of the time
+Player V2 : MiniMax + Book won 100 % (2) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 01-12-2019 12:19:56
+===[Results of Player V2 : MiniMax + Book vs Player V3 : Nega+Book]===
+Player V2 : MiniMax + Book won 50 % (1) of the time
+Player V3 : Nega+Book won 50 % (1) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Player V3 : Nega+Book vs Player V2 : MiniMax + Book]===
+Player V3 : Nega+Book won 50 % (1) of the time
+Player V2 : MiniMax + Book won 50 % (1) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 01-12-2019 12:23:21
+===[Results of Player V2 : MiniMax + Book vs Player V3 : Nega+Book]===
+Player V2 : MiniMax + Book won 50 % (2) of the time
+Player V3 : Nega+Book won 50 % (2) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Player V3 : Nega+BplayerV1 = myPlayerOld.myPlayerOld()ook vs Player V2 : MiniMax + Book]===
+Player V3 : Nega+Book won 25 % (1) of the time
+Player V2 : MiniMax + Book won 75 %playerV1 = myPlayerOld.myPlayerOld()playerV1 = myPlayerOld.myPlayerOld() (3) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 01-12-2019 12:34:27
+===[Results of Player V2 : MiniMax + Book vs Player V3 : Nega+Book]===
+Player V2 : MiniMax + Book won 30 % (3) of the time
+Player V3 : Nega+Book won 70 % (7) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Player V3 : Nega+Book vs Player V2 : MiniMax + Book]===
+Player V3 : Nega+Book won 30 % (3) of the time
+Player V2 : MiniMax + Book won 70 % (7) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 01-12-2019 12:55:42
+===[Results of Player V1: MiniMax vs Player V1: MiniMax]===
+Player V1: MiniMax won 0 % (0) of the time
+Player V1: MiniMax won 100 % (10) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Player V1: MiniMax vs Player V1: MiniMax]===
+Player V1: MiniMax won 0 % (0) of the time
+Player V1: MiniMax won 100 % (10) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 01-12-2019 13:11:55
+===[Results of Player V1: MiniMax vs Player V1:Negamax]===
+Player V1: MiniMax won 0 % (0) of the time
+Player V1:Negamax won 100 % (10) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Player V1:Negamax vs Player V1: MiniMax]===
+Player V1:Negamax won 0 % (0) of the time
+Player V1: MiniMax won 100 % (10) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 01-12-2019 13:30:17
+===[Results of Hash Player: MiniMax vs Hash Player: MiniMax]===
+Hash Player: MiniMax won 30 % (3) of the time
+Hash Player: MiniMax won 70 % (7) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Hash Player: MiniMax vs Hash Player: MiniMax]===
+Hash Player: MiniMax won 30 % (3) of the time
+Hash Player: MiniMax won 70 % (7) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 01-12-2019 13:40:24
+===[Results of Hash Player: MiniMax vs Hash Player]===
+Hash Player: MiniMax won 30 % (3) of the time
+Hash Player won 70 % (7) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Hash Player vs Hash Player: MiniMax]===
+Hash Player won 30 % (3) of the time
+Hash Player: MiniMax won 70 % (7) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 01-12-2019 14:07:28
+===[Results of Hash Player: MiniMax vs Hash Player: Nega Max]===
+Hash Player: MiniMax won 40 % (2) of the time
+Hash Player: Nega Max won 40 % (2) of the time
+Draw 20 % (1) of the time
+===============================
+===[Results of Hash Player: Nega Max vs Hash Player: MiniMax]===
+Hash Player: Nega Max won 40 % (2) of the time
+Hash Player: MiniMax won 0 % (0) of the time
+Draw 60 % (3) of the time
+===============================
+
+On the 01-12-2019 15:16:59
+===[Results of Player V2 : Nega+Book vs Hash Player: Nega Max]===
+Player V2 : Nega+Book won 60 % (6) of the time
+Hash Player: Nega Max won 40 % (4) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Hash Player: Nega Max vs Player V2 : Nega+Book]===
+Hash Player: Nega Max won 20 % (2) of the time
+Player V2 : Nega+Book won 70 % (7) of the time
+Draw 10 % (1) of the time
+===============================
+

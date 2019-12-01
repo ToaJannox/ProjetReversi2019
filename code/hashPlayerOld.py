@@ -10,7 +10,7 @@ from playerInterface import *
 import OpeningBook
 
 
-class hashPlayer(PlayerInterface):
+class hashPlayerOld(PlayerInterface):
 
     def __init__(self):
         self._board = Reversi.Board(10)
@@ -22,7 +22,7 @@ class hashPlayer(PlayerInterface):
         self._tableUsage = 0
 
     def getPlayerName(self):
-        return "Hash Player: Nega Max"
+        return "Hash Player: MiniMax"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
@@ -104,7 +104,7 @@ class hashPlayer(PlayerInterface):
             self._OB_active = False
 
         # minimax
-        return self._start_negamax(4)
+        return self._start_minimax(4)
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()
@@ -115,7 +115,7 @@ class hashPlayer(PlayerInterface):
         else:
             return 0
 
-    def _start_negamax(self, depth):
+    def _start_minimax(self, depth):
         if self._board.is_game_over():
             return None
 
@@ -123,44 +123,67 @@ class hashPlayer(PlayerInterface):
         best_move = None
         for m in self._board.legal_moves():
             self._board.push(m)
-            value = -self._negamax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
+            value = self._minimax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
+            
             if value > maxx:
                 maxx = value
                 best_move = m
-            self._board.pop()
-
+            self._board.pop()        
+    
         return best_move
 
-    def _negamax(self, depth, player, alpha, beta):
+    def _minimax(self, depth, player, alpha, beta):
         # If game is over or depth limit reached
         if depth == 0 or self._board.is_game_over():
-            return Evaluator.eval(self._board, self._mycolor) * (-1 if player != self._mycolor else 1)
+            return Evaluator.eval(self._board, self._mycolor)
 
-        color = self._board._flip(player)
-
-        # If player cannot move, opponent turn
+        # If player cannot move
         if not self._board.at_least_one_legal_move(player):
-            return -self._negamax(depth - 1, color, -beta, -alpha)
-        compute = True
-        currentHash = self._boardHash()
-        if (self._checkTable(currentHash)): # we check in table whether or not we have to compute the best move
+            p = 2 if player == 1 else 1
+            return self._minimax(depth - 1, p, alpha, beta)
+
+        if player == self._mycolor:  # Player turn
+            value = - sys.maxsize - 1
+            compute = True
+            currentHash = self._boardHash()
+            if (self._checkTable(currentHash)): # we check in table whether or not we have to compute the best move
                 # if(self._getDepth(currentHash)==depth):
                 compute = False
                 self._tableUsage += 1
 
-        value = - sys.maxsize - 1
-        if compute:
-            for m in self._board.legal_moves():
-                self._board.push(m)
-                value = max(value, -self._negamax(depth - 1, color, -beta, -alpha))
-                self._board.pop()
-                if value >= beta:
-                    break  # Cutoff
-                alpha = max(alpha, value)
-            self._addToTable(currentHash,depth,value)
-        else:
-            value = self._getHeuristic(currentHash)
-        return value
+            if compute:        
+                for m in self._board.legal_moves():
+                    self._board.push(m)
+                    value = max(value, self._minimax(depth - 1, self._opponent, alpha, beta))
+                    self._board.pop()
+                    if value >= beta:
+                        break  # Cutoff
+                    alpha = max(alpha, value)
+                self._addToTable(currentHash,depth,value)
+                
+            else:
+                value = self._getHeuristic(currentHash)
+            return value
+        else:  # Opponent turn
+            value = sys.maxsize
+            compute = True
+            currentHash = self._boardHash()
+            if (self._checkTable(currentHash)): # we check in table whether or not we have to compute the best move
+                # if(self._getDepth(currentHash)==depth):
+                compute = False
+                self._tableUsage += 1
+            if compute:
+                for m in self._board.legal_moves():
+                    self._board.push(m)
+                    value = min(value, self._minimax(depth - 1, self._mycolor, alpha, beta))
+                    self._board.pop()
+                    if alpha >= value:
+                        break  # Cutoff
+                    beta = min(beta, value)
+                self._addToTable(currentHash,depth,value)
+            else:
+                value = self._getHeuristic(currentHash)
+            return value
 
     def _boardHash(self):
         return hash(tuple([tuple(c) for c in self._board._board]))

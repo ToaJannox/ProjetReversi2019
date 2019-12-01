@@ -20,7 +20,7 @@ class myPlayerBook(PlayerInterface):
         self._move_history = []
 
     def getPlayerName(self):
-        return "Player V3 : Nega+Book"
+        return "Player V2 : Nega+Book"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
@@ -100,7 +100,7 @@ class myPlayerBook(PlayerInterface):
             self._OB_active = False
 
         # minimax
-        return self._start_negamax(2)
+        return self._start_negamax(4)
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()

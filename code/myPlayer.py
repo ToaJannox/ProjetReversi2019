@@ -16,7 +16,7 @@ class myPlayer(PlayerInterface):
         self._mycolor = None
 
     def getPlayerName(self):
-        return "Player V1"
+        return "Player V1:Negamax"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
@@ -85,7 +85,7 @@ class myPlayer(PlayerInterface):
         # Opening move
 
         # negamax
-        return self._start_negamax(2)
+        return self._start_negamax(3)
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()

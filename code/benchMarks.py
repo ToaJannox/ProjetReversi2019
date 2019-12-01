@@ -1,8 +1,12 @@
 from localGame import *
 import myPlayer
 import myPlayerBook
+import myPlayerOld
+import myPlayerBookOld
+
 import RandomPlayer
 import hashPlayer
+import hashPlayerOld
 from itertools import permutations
 from datetime import datetime
 import os
@@ -65,18 +69,27 @@ def benchmark(n,players,writeToFile=False):
         dataFile.close()
 
     
-n = 4
+n = 10
 
 playerRand = RandomPlayer.RandomPlayer()
-playerV1 = myPlayer.myPlayer()
-playerV2 = myPlayerBook.myPlayerBook()
-playerV22 = myPlayerBook.myPlayerBook()
-playerV3 = hashPlayer.hashPlayer()
+
+playerV1 = myPlayerOld.myPlayerOld()
+playerV1_2 = myPlayerOld.myPlayerOld()
+playerV15 = myPlayer.myPlayer()
+
+playerV2 = myPlayerBookOld.myPlayerBookOld()
+playerV2_2 = myPlayerBookOld.myPlayerBookOld()
+playerV25 =myPlayerBook.myPlayerBook()
+
+playerV3 =  hashPlayerOld.hashPlayerOld()
+playerV3_2=  hashPlayerOld.hashPlayerOld()
+playerV35 =  hashPlayer.hashPlayer()
+
 
 players = []
 
-players.append(playerV2)
-players.append(playerV3)
+players.append(playerV25)
+players.append(playerV35)
 
 benchmark(n,players,writeToFile=True) #enables result to be written to a file
 # benchmark(n,players)
