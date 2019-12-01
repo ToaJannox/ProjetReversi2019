@@ -1,3 +1,5 @@
+from random import randrange
+
 
 class OpeningBook:
     _opening_list = [
@@ -104,6 +106,8 @@ class OpeningBook:
             cpt += 1
 
     def get_following_move(self, move_history):
+        valid_moves = []
+
         for seq in self._moves:
             if len(seq) <= len(move_history):
                 self._moves.remove(seq)
@@ -120,6 +124,9 @@ class OpeningBook:
                 cpt += 1
 
             if valid_move:
-                return seq[cpt]
+                valid_moves.append(seq[cpt])
 
-        return None
+        if len(valid_moves) > 0:
+            return valid_moves[randrange(len(valid_moves))]
+        else:
+            return None
