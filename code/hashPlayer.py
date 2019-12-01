@@ -10,7 +10,7 @@ from playerInterface import *
 import OpeningBook
 
 
-class myPlayerBookOld(PlayerInterface):
+class hashPlayer(PlayerInterface):
 
     def __init__(self):
         self._board = Reversi.Board(10)
@@ -18,9 +18,11 @@ class myPlayerBookOld(PlayerInterface):
         self._opening_book = OpeningBook.OpeningBook()
         self._OB_active = True
         self._move_history = []
+        self._table ={}
+        self._tableUsage = 0
 
     def getPlayerName(self):
-        return "Player V2 : MiniMax + Book"
+        return "Hash Player"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
@@ -57,6 +59,8 @@ class myPlayerBookOld(PlayerInterface):
             print("I won!!!")
         else:
             print("I lost :(!!")
+        print("Used table %d times" % self._tableUsage)
+        
 
     def _play(self):
         # Killer move detection
@@ -100,7 +104,7 @@ class myPlayerBookOld(PlayerInterface):
             self._OB_active = False
 
         # minimax
-        return self._start_minimax(3)
+        return self._start_minimax(4)
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()
@@ -120,11 +124,12 @@ class myPlayerBookOld(PlayerInterface):
         for m in self._board.legal_moves():
             self._board.push(m)
             value = self._minimax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
+            
             if value > maxx:
                 maxx = value
                 best_move = m
-            self._board.pop()
-
+            self._board.pop()        
+    
         return best_move
 
     def _minimax(self, depth, player, alpha, beta):
@@ -139,21 +144,92 @@ class myPlayerBookOld(PlayerInterface):
 
         if player == self._mycolor:  # Player turn
             value = - sys.maxsize - 1
-            for m in self._board.legal_moves():
-                self._board.push(m)
-                value = max(value, self._minimax(depth - 1, self._opponent, alpha, beta))
-                self._board.pop()
-                if value >= beta:
-                    break  # Cutoff
-                alpha = max(alpha, value)
+            compute = True
+            currentHash = self._boardHash()
+            if (self._checkTable(currentHash)): # we check in table whether or not we have to compute the best move
+                # if(self._getDepth(currentHash)==depth):
+                compute = False
+                self._tableUsage += 1
+
+            if compute:        
+                for m in self._board.legal_moves():
+                    self._board.push(m)
+                    value = max(value, self._minimax(depth - 1, self._opponent, alpha, beta))
+                    self._board.pop()
+                    if value >= beta:
+                        break  # Cutoff
+                    alpha = max(alpha, value)
+                self._addToTable(currentHash,depth,value)
+                
+            else:
+                value = self._getHeuristic(currentHash)
             return value
         else:  # Opponent turn
             value = sys.maxsize
-            for m in self._board.legal_moves():
-                self._board.push(m)
-                value = min(value, self._minimax(depth - 1, self._mycolor, alpha, beta))
-                self._board.pop()
-                if alpha >= value:
-                    break  # Cutoff
-                beta = min(beta, value)
+            compute = True
+            currentHash = self._boardHash()
+            if (self._checkTable(currentHash)): # we check in table whether or not we have to compute the best move
+                # if(self._getDepth(currentHash)==depth):
+                compute = False
+                self._tableUsage += 1
+            if compute:
+                for m in self._board.legal_moves():
+                    self._board.push(m)
+                    value = min(value, self._minimax(depth - 1, self._mycolor, alpha, beta))
+                    self._board.pop()
+                    if alpha >= value:
+                        break  # Cutoff
+                    beta = min(beta, value)
+                self._addToTable(currentHash,depth,value)
+            else:
+                value = self._getHeuristic(currentHash)
             return value
+
+    def _boardHash(self):
+        return hash(tuple([tuple(c) for c in self._board._board]))
+
+    def _checkTable(self,hash):
+        return (self._table.get(hash) != None)
+
+    def _addToTable(self,hash,depth,heuristic):
+        self._table[hash] = {'depth':depth,'heuristic':heuristic}
+    
+    
+    def _getDepth(self,hash):
+        if self._checkTable(hash):
+            return self._table[hash]["depth"]
+        else:
+            return None
+
+    def _getHeuristic(self,hash):
+        if self._checkTable(hash):
+            return self._table[hash]["heuristic"]
+        else:
+            return None
+
+
+    def _printTable(self):
+        for hash in self._table.keys():
+            self._printTableEntry(hash)
+    
+    def _printTableEntry(self,hash):
+            print("Hash: ",hash," |depth: ",self._getDepth(hash)," |heuristic: ",self._getHeuristic(hash))
+
+    def _testMove(self):
+        move = self._play()
+        currentHash = self._boardHash()
+
+        print("Current board hash " , currentHash)
+        print(self._checkTable(currentHash))
+        self._printTableEntry(currentHash)
+        self._addToTable(currentHash,1,17)
+        print(self._checkTable(currentHash))
+        self._printTableEntry(currentHash)
+        
+        self._board.push(move)
+        currentHash = self._boardHash()        
+        print("Current board hash " ,currentHash," after move push")
+        
+        self._board.pop()
+        currentHash = self._boardHash()
+        print("Current board hash " ,currentHash," after move pop")

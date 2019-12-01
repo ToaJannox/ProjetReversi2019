@@ -16,7 +16,7 @@ class myPlayerOld(PlayerInterface):
         self._mycolor = None
 
     def getPlayerName(self):
-        return "Player V1"
+        return "Player V1: MiniMax"
 
     def getPlayerMove(self):
         if self._board.is_game_over():

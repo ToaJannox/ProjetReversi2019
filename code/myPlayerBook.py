@@ -20,7 +20,7 @@ class myPlayerBook(PlayerInterface):
         self._move_history = []
 
     def getPlayerName(self):
-        return "Player V2"
+        return "Player V3 : Nega+Book"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
@@ -99,8 +99,13 @@ class myPlayerBook(PlayerInterface):
             #  Else
             self._OB_active = False
 
+<<<<<<< Updated upstream
         # negamax
         return self._start_negamax(2)
+=======
+        # minimax
+        return self._start_minimax(4)
+>>>>>>> Stashed changes
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()

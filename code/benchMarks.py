@@ -2,6 +2,7 @@ from localGame import *
 import myPlayer
 import myPlayerBook
 import RandomPlayer
+import hashPlayer
 from itertools import permutations
 from datetime import datetime
 import os
@@ -19,8 +20,8 @@ def benchmark(n,players,writeToFile=False):
             player2 = match[1]
             players.append(player1)
             players.append(player2)
-            # result = localGame(players)
-            result =0
+            result = localGame(players)
+            # result =0
             matchData[result] +=1
             players.clear()
             print("Game ",j+1," done")
@@ -37,7 +38,7 @@ def benchmark(n,players,writeToFile=False):
         black = matches[i][0]
         white = matches[i][1]
         if(writeToFile):
-            header = "===[Results of " + black.getPlayerName()  + "vs" + white.getPlayerName() + "]===\n"
+            header = "===[Results of " + black.getPlayerName()  + " vs " + white.getPlayerName() + "]===\n"
             dataFile.write(header)
         else:
             print("===[Results of ",black.getPlayerName()," vs ",white.getPlayerName(),"]===")
@@ -64,16 +65,18 @@ def benchmark(n,players,writeToFile=False):
         dataFile.close()
 
     
-n = 1
+n = 4
 
 playerRand = RandomPlayer.RandomPlayer()
 playerV1 = myPlayer.myPlayer()
 playerV2 = myPlayerBook.myPlayerBook()
+playerV22 = myPlayerBook.myPlayerBook()
+playerV3 = hashPlayer.hashPlayer()
 
 players = []
 
-players.append(playerV1)
 players.append(playerV2)
+players.append(playerV3)
 
 benchmark(n,players,writeToFile=True) #enables result to be written to a file
 # benchmark(n,players)

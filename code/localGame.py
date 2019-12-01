@@ -59,15 +59,24 @@ def localGame(players):
 
     print("The game is over")
     print(b)
+    
     (nbwhites, nbblacks) = b.get_nb_pieces()
     print("Time:", totalTime)
     print("Winner: ", end="")
     
     if nbwhites > nbblacks:
         print("WHITE")
+        print("Player ",players[0].getPlayerName())
+        players[0].endGame(2)
+        print("Player ",players[1].getPlayerName())
+        players[1].endGame(2)
         res = 1
     elif nbblacks > nbwhites:
         print("BLACK")
+        print("Player ",players[0].getPlayerName())
+        players[0].endGame(1)
+        print("Player ",players[1].getPlayerName())
+        players[1].endGame(1)
         res = 2
     else:
         print("DEUCE")
