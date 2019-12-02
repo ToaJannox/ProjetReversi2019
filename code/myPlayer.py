@@ -20,7 +20,7 @@ class myPlayer(PlayerInterface):
         self._move_history = []
 
     def getPlayerName(self):
-        return "Jackson"
+        return "Artikodin"
 
     def getPlayerMove(self):
         if self._board.is_game_over():

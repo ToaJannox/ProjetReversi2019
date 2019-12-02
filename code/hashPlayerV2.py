@@ -11,7 +11,7 @@ import OpeningBook
 from TranspositionTable import *
 
 
-class hashPlayer(PlayerInterface):
+class hashPlayerV2(PlayerInterface):
 
     def __init__(self):
         self._board = Reversi.Board(10)
@@ -23,7 +23,7 @@ class hashPlayer(PlayerInterface):
         self._table_usage = 0
 
     def getPlayerName(self):
-        return "Frodon"
+        return "Mewtwo"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
@@ -105,7 +105,7 @@ class hashPlayer(PlayerInterface):
             self._OB_active = False
 
         # minimax
-        return self._start_negamax(3)
+        return self._start_negamax(4)
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()

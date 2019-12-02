@@ -1,29 +1,29 @@
-Q the Q:
+missingno:
     
     File : RandomPlayer.py
     Algorithm : Random Move Selection
 
-Jackson:
+Artikodin:
 
     File: myPlayer.py
     Algorithm: negaMax + Opening Book
 
-Kirk:
+Sulfura:
 
     File: hashPlayer.py
     Algorithm : negaMax + Openning Book + simple table
 
-Obi-Wan:
+Electhor:
 
-    File: hashPlayer.py
+    File: hashPlayerDepth.py
     Algorithm : negaMax + Openning Book + simple table + depth 
 
-Frodon:
+Mewtwo:
 
     File: hashPlayerV2.py
     Algorithm: negaMax + Openning Book + transition Table
 
-Parallax:
+Mew:
     
     File: threadPlayer.py
     Algorithm: Frodon + multi-threads

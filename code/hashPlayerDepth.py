@@ -22,7 +22,7 @@ class hashPlayerDepth(PlayerInterface):
         self._tableUsage = 0
 
     def getPlayerName(self):
-        return "Obi-Wan"
+        return "Electhor"
 
     def getPlayerMove(self):
         if self._board.is_game_over():

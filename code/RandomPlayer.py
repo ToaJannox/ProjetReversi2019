@@ -13,7 +13,7 @@ class RandomPlayer(PlayerInterface):
         self._mycolor = None
 
     def getPlayerName(self):
-        return "Q the Q"
+        return "missingno"
 
     def getPlayerMove(self):
         if self._board.is_game_over():

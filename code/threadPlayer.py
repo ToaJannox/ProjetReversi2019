@@ -8,13 +8,15 @@ import Reversi
 import OpeningBook
 
 from random import randint
+from threading import Thread
+from queue import Queue
 
 from Evaluator import Evaluator
 from playerInterface import *
 from TranspositionTable import *
 
 
-class hashPlayer(PlayerInterface):
+class threadPlayer(PlayerInterface):
 
     def __init__(self):
         self._board = Reversi.Board(10)
@@ -26,7 +28,7 @@ class hashPlayer(PlayerInterface):
         self._table_usage = 0
 
     def getPlayerName(self):
-        return "Parallax"
+        return "Mew"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
@@ -108,7 +110,7 @@ class hashPlayer(PlayerInterface):
             self._OB_active = False
 
         # minimax
-        return self._start_negamax(3)
+        return self._start_negamax(4)
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()
@@ -125,15 +127,24 @@ class hashPlayer(PlayerInterface):
 
         maxx = - sys.maxsize - 1
         best_move = None
+        queue = Queue()
         for m in self._board.legal_moves():
             self._board.push(m)
-            value = -self._negamax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
+            # value = -self._negamax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
+            thread = Thread(target=self._negaThread,args=[(depth-1),self._opponent,(-sys.maxsize-1),sys.maxsize,queue])
+            thread.start()
+            value = - (queue.get())
             if value > maxx:
                 maxx = value
                 best_move = m
             self._board.pop()
 
+        for m in range(len(self._board.legal_moves())):
+            thread.join()
         return best_move
+
+    def _negaThread (self,depth,player,alpha,beta,queue):
+        queue.put(self._negamax(depth,player,alpha,beta))
 
     def _negamax(self, depth, player, alpha, beta):
         alpha_origin = alpha

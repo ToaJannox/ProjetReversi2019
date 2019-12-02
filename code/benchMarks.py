@@ -1,8 +1,11 @@
 from localGame import *
-import myPlayer
 
-import RandomPlayer
-import hashPlayer
+from RandomPlayer import RandomPlayer
+from myPlayer import myPlayer
+from hashPlayer import hashPlayer
+from hashPlayerDepth import hashPlayerDepth
+from hashPlayerV2 import hashPlayerV2
+from threadPlayer import threadPlayer
 
 from itertools import permutations
 from datetime import datetime
@@ -66,16 +69,21 @@ def benchmark(n,players,writeToFile=False):
         dataFile.close()
 
     
-n = 10
+n = 1
 
-playerRand = RandomPlayer.RandomPlayer()
+missingo = RandomPlayer()
 
-playerV15 = myPlayer.myPlayer()
+artikodin = myPlayer()
+sulfura = hashPlayer()
+electhor  = hashPlayerDepth()
+mewtwo = hashPlayerV2()
 
-playerV35 =  hashPlayer.hashPlayer()
-
+mew = threadPlayer()
 
 players = []
+players.append(mewtwo)
+players.append(mew)
+
 
 
 
