@@ -23,7 +23,7 @@ class hashPlayer(PlayerInterface):
         self._table_usage = 0
 
     def getPlayerName(self):
-        return "Hash Player: Nega Max"
+        return "Frodon"
 
     def getPlayerMove(self):
         if self._board.is_game_over():

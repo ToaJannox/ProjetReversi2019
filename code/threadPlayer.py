@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import time
-
-from Evaluator import Evaluator
-import Reversi
 import sys
-from random import randint
-from playerInterface import *
+import _thread
+
+import Reversi
 import OpeningBook
 
+from random import randint
 
-class myPlayerBook(PlayerInterface):
+from Evaluator import Evaluator
+from playerInterface import *
+from TranspositionTable import *
+
+
+class hashPlayer(PlayerInterface):
 
     def __init__(self):
         self._board = Reversi.Board(10)
@@ -18,9 +22,11 @@ class myPlayerBook(PlayerInterface):
         self._opening_book = OpeningBook.OpeningBook()
         self._OB_active = True
         self._move_history = []
+        self._hash_table = TranspositionTable()
+        self._table_usage = 0
 
     def getPlayerName(self):
-        return "Player V2 : Nega+Book"
+        return "Parallax"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
@@ -57,6 +63,8 @@ class myPlayerBook(PlayerInterface):
             print("I won!!!")
         else:
             print("I lost :(!!")
+        print("Used table %d times" % self._table_usage)
+
 
     def _play(self):
         # Killer move detection
@@ -100,7 +108,7 @@ class myPlayerBook(PlayerInterface):
             self._OB_active = False
 
         # minimax
-        return self._start_negamax(4)
+        return self._start_negamax(3)
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()
@@ -128,6 +136,26 @@ class myPlayerBook(PlayerInterface):
         return best_move
 
     def _negamax(self, depth, player, alpha, beta):
+        alpha_origin = alpha
+        self._table_usage += 1
+
+        # Transposition table lookup
+        current_hash = self._get_board_hash()
+        tt_entry = self._hash_table.get_table_entry(current_hash)
+        # Check in table whether or not we have to compute the best move
+        if tt_entry is not None and tt_entry.depth >= depth:
+            if tt_entry.flag == self._hash_table._EXACT:
+                return tt_entry.value
+            elif tt_entry.flag == self._hash_table._LOWERBOUND:
+                alpha = max(alpha, tt_entry.value)
+            else:  # tt_entry.flag == self._hash_table._UPPERBOUND:
+                beta = min(beta, tt_entry.value)
+
+            if alpha >= beta:
+                return tt_entry.value
+
+        self._table_usage -= 1
+
         # If game is over or depth limit reached
         if depth == 0 or self._board.is_game_over():
             return Evaluator.eval(self._board, self._mycolor) * (-1 if player != self._mycolor else 1)
@@ -146,4 +174,21 @@ class myPlayerBook(PlayerInterface):
             alpha = max(alpha, value)
             if alpha >= beta:
                 break  # Cutoff
+
+        # Store in transposition table
+        tt_entry = TableEntry()
+        tt_entry.value = value
+        if value <= alpha_origin:
+            tt_entry.flag = self._hash_table._UPPERBOUND
+        elif value >= beta:
+            tt_entry.flag = self._hash_table._LOWERBOUND
+        else:
+            tt_entry.flag = self._hash_table._EXACT
+
+        tt_entry.depth = depth
+        self._hash_table.store(current_hash, tt_entry)
+
         return value
+
+    def _get_board_hash(self):
+        return hash(tuple([tuple(c) for c in self._board._board]))
