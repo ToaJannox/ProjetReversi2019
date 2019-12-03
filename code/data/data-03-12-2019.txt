@@ -106,3 +106,87 @@ Mewtwo won 20 % (2) of the time
 Draw 10 % (1) of the time
 ===============================
 
+On the 03-12-2019 22:57:57
+===[Results of missingno vs Entei]===
+missingno won 0 % (0) of the time
+Entei won 100 % (4) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Entei vs missingno]===
+Entei won 100 % (4) of the time
+missingno won 0 % (0) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 03-12-2019 23:00:21
+===[Results of Mew vs Entei]===
+Mew won 25 % (1) of the time
+Entei won 75 % (3) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Entei vs Mew]===
+Entei won 25 % (1) of the time
+Mew won 75 % (3) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 03-12-2019 23:06:10
+===[Results of Mew vs Entei]===
+Mew won 50 % (5) of the time
+Entei won 50 % (5) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Entei vs Mew]===
+Entei won 60 % (6) of the time
+Mew won 40 % (4) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 03-12-2019 23:46:03
+===[Results of Mew vs Entei]===
+Mew won 60 % (6) of the time
+Entei won 40 % (4) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Entei vs Mew]===
+Entei won 80 % (8) of the time
+Mew won 20 % (2) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 03-12-2019 23:51:39
+===[Results of missingno vs Entei]===
+missingno won 0 % (0) of the time
+Entei won 100 % (2) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Entei vs missingno]===
+Entei won 100 % (2) of the time
+missingno won 0 % (0) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 03-12-2019 23:53:02
+===[Results of Mew vs Entei]===
+Mew won 0 % (0) of the time
+Entei won 50 % (1) of the time
+Draw 50 % (1) of the time
+===============================
+===[Results of Entei vs Mew]===
+Entei won 0 % (0) of the time
+Mew won 100 % (2) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 03-12-2019 23:56:32
+===[Results of Mew vs Entei]===
+Mew won 20 % (2) of the time
+Entei won 80 % (8) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Entei vs Mew]===
+Entei won 20 % (2) of the time
+Mew won 60 % (6) of the time
+Draw 20 % (2) of the time
+===============================
+

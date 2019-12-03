@@ -9,13 +9,13 @@ import OpeningBook
 
 from random import randint
 
-from Evaluator import Evaluator
+from EvaluatorPBS import EvaluatorPBS
 from playerInterface import *
 from TranspositionTable import *
 
 lock = multiprocessing.RLock()
 
-class processPlayer(PlayerInterface):
+class processPlayerV2(PlayerInterface):
 
     def __init__(self):
         self._board = Reversi.Board(10)
@@ -27,7 +27,7 @@ class processPlayer(PlayerInterface):
         self._table_usage = 0
 
     def getPlayerName(self):
-        return "Mew"
+        return "Entei"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
@@ -79,7 +79,7 @@ class processPlayer(PlayerInterface):
             self._board.push(m)
             (_, x, y) = m
             if [x, y] in corners:
-                max_value = max(max_value, Evaluator.eval(self._board, self._mycolor))
+                max_value = max(max_value, EvaluatorPBS.eval(self._board, self._mycolor))
                 best_move = m
             self._board.pop()
 
@@ -92,7 +92,7 @@ class processPlayer(PlayerInterface):
         for m in self._board.legal_moves():
             self._board.push(m)
             if not self._board.at_least_one_legal_move(self._opponent):
-                max_value = max(max_value, Evaluator.eval(self._board, self._mycolor))
+                max_value = max(max_value, EvaluatorPBS.eval(self._board, self._mycolor))
                 best_move = m
             self._board.pop()
 
@@ -178,7 +178,7 @@ class processPlayer(PlayerInterface):
 
         # If game is over or depth limit reached
         if depth == 0 or board.is_game_over():
-            return Evaluator.eval(board, self._mycolor) * (-1 if player != self._mycolor else 1)
+            return EvaluatorPBS.eval(board, self._mycolor) * (-1 if player != self._mycolor else 1)
 
         color = board._flip(player)
 

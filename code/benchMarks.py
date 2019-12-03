@@ -6,6 +6,7 @@ from hashPlayer import hashPlayer
 from hashPlayerDepth import hashPlayerDepth
 from hashPlayerV2 import hashPlayerV2
 from processPlayer import processPlayer
+from processPlayerV2 import processPlayerV2
 
 from itertools import permutations
 from datetime import datetime
@@ -71,18 +72,19 @@ def benchmark(n,players,writeToFile=False):
     
 n = 10
 
-missingo = RandomPlayer()
+missingno = RandomPlayer()
 
 artikodin = myPlayer()
 sulfura = hashPlayer()
 electhor  = hashPlayerDepth()
-
 mewtwo = hashPlayerV2()
+
 mew = processPlayer()
+entei = processPlayerV2()
 
 players = []
-players.append(mewtwo)
 players.append(mew)
+players.append(entei)
 
 
 

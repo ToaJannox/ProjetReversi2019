@@ -28,13 +28,14 @@ class EvaluatorPBS:
                       [-20,-50,-2,-2,-2,-2,-2,-2,-50,-20],
                       [100,-20,10, 5, 5, 5, 5,10,-20,100]
                         ]
+    
+    movePlayed = 0
     @staticmethod
+    
     def _get_game_phase(board):
-        (c1, c2) = board.get_nb_pieces()
-        nb_pieces = c1 + c2
-        if nb_pieces < 33:
+        if EvaluatorPBS.movePlayed <39:
             return GamePhase.EARLY_GAME
-        elif nb_pieces <= 66:
+        elif EvaluatorPBS.movePlayed>=39 and EvaluatorPBS.movePlayed<71:
             return GamePhase.MID_GAME
         else:
             return GamePhase.LATE_GAME
@@ -48,21 +49,19 @@ class EvaluatorPBS:
         #   elif LATE: 1000*eval_corner + 100*eval_mobility + 500*eval_disc_diff + 500*eval_parity
 
         if board.is_game_over():
-            return 1000 * EvaluatorPBS._eval_disc_diff(board, player)
+            return EvaluatorPBS._eval_disc_diff(board, player)
 
         game_phase = EvaluatorPBS._get_game_phase(board)
 
         if game_phase == GamePhase.EARLY_GAME:
-            return 1000 * EvaluatorPBS._eval_corner(board, player) + 50 * EvaluatorPBS._eval_mobility(board, player)
+            return EvaluatorPBS._eval_positional(board,player)
         elif game_phase == GamePhase.MID_GAME:
-            return 1000 * EvaluatorPBS._eval_corner(board, player) + 20 * EvaluatorPBS._eval_mobility(board, player) + 10\
-                   * EvaluatorPBS._eval_disc_diff(board, player) + 100 * EvaluatorPBS._eval_parity(board)
+            return 10 * EvaluatorPBS._eval_corners(board,player) + EvaluatorPBS._eval_mobility(board,player)
         else:  # game_phase == GamePhase.LATE_GAME:
-            return 1000 * EvaluatorPBS._eval_corner(board, player) + 100 * EvaluatorPBS._eval_mobility(board, player) + 500\
-                   * EvaluatorPBS._eval_disc_diff(board, player) + 500 * EvaluatorPBS._eval_parity(board)
+            return  EvaluatorPBS._eval_disc_diff(board,player)
 
     @staticmethod
-    def _eval_corner(board, player):
+    def _eval_corners(board, player):
         opponent = board._flip(player)
 
         cpt_player = 0
@@ -88,7 +87,7 @@ class EvaluatorPBS:
         if board._board[board.get_board_size()-1][board.get_board_size()-1] == opponent:
             cpt_opponent += 1
 
-        return 100 * (cpt_player - cpt_opponent) / (cpt_player + cpt_opponent + 1)
+        return  (cpt_player - cpt_opponent) 
 
     @staticmethod
     def _eval_mobility(board, player):
@@ -103,15 +102,17 @@ class EvaluatorPBS:
                 if board.lazyTest_ValidMove(opponent, x, y):
                     cpt_opponent += 1
 
-        return 100 * (cpt_player - cpt_opponent) / (cpt_player + cpt_opponent + 1)
+        return (cpt_player - cpt_opponent) / (cpt_player + cpt_opponent)
 
+    
+    
     @staticmethod
     def _eval_disc_diff(board, player):
         (whites, blacks) = board.get_nb_pieces()
         if player == board._BLACK:
-            return 100 * (blacks - whites) / (blacks + whites)
+            return blacks-whites
         else:
-            return 100 * (whites - blacks) / (whites + blacks)
+            return whites-blacks
 
     @staticmethod
     def _eval_parity(board):
@@ -120,3 +121,17 @@ class EvaluatorPBS:
         size = board.get_board_size()
         rem_discs = (size * size) - nb_pieces
         return -1 if rem_discs % 2 == 0 else 1
+
+    @staticmethod
+    def _eval_positional(board,player):
+        opponent = board._flip(player)
+        res = 0
+        for x in range(0, board.get_board_size()):
+            for y in range(0, board.get_board_size()):
+                if board._board[x][y] == player:
+                    res += EvaluatorPBS.positionnalMap[x][y]
+                elif board._board[x][y] == opponent:
+                    res -= EvaluatorPBS.positionnalMap[x][y]
+        return res
+
+
