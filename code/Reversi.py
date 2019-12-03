@@ -210,11 +210,11 @@ class Board:
 
     def _piece2str(self, c):
         if c==self._WHITE:
-            return 'O'
+            return '\x1b[0;30;47m' + '  ' + '\x1b[0m'
         elif c==self._BLACK:
-            return 'X'
+            return '\x1b[0;37;40m' + '  ' + '\x1b[0m'
         else:
-            return '.'
+            return '\x1b[0;32;42m' + '  ' + '\x1b[0m'
 
     def __str__(self):
         toreturn=""

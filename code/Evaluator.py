@@ -101,5 +101,6 @@ class Evaluator:
     def _eval_parity(board):
         (c1, c2) = board.get_nb_pieces()
         nb_pieces = c1 + c2
-        rem_discs = 64 - nb_pieces
+        size = board.get_board_size()
+        rem_discs = (size * size) - nb_pieces
         return -1 if rem_discs % 2 == 0 else 1

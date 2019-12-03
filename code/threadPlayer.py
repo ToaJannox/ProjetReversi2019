@@ -2,6 +2,8 @@
 
 import time
 import sys
+import copy
+import multiprocessing
 import _thread
 
 import Reversi
@@ -69,16 +71,15 @@ class threadPlayer(PlayerInterface):
             print("I lost :(!!")
         print("Used table %d times" % self._table_usage)
 
-
     def _play(self):
         # Killer move detection
         # # Corner
         max_value = - sys.maxsize - 1
         best_move = None
         corners = [[0, 0],
-                   [0, self._board.get_board_size()-1],
-                   [self._board.get_board_size()-1, 0],
-                   [self._board.get_board_size()-1, self._board.get_board_size()-1]]
+                   [0, self._board.get_board_size() - 1],
+                   [self._board.get_board_size() - 1, 0],
+                   [self._board.get_board_size() - 1, self._board.get_board_size() - 1]]
         for m in self._board.legal_moves():
             self._board.push(m)
             (_, x, y) = m
@@ -129,80 +130,91 @@ class threadPlayer(PlayerInterface):
 
         maxx = - sys.maxsize - 1
         best_move = None
-        queue = Queue()
+        queue = multiprocessing.Queue()
+        threads = []
+        cpt = 0
         for m in self._board.legal_moves():
             self._board.push(m)
             # value = -self._negamax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
-            thread = Thread(target=self._negaThread,args=[(depth-1),self._opponent,(-sys.maxsize-1),sys.maxsize,queue])
-            thread.start()
-            value = - (queue.get())
+            b = copy.deepcopy(self._board)
+            threads.append(multiprocessing.Process(target=self._negaThread, args=(b, (depth - 1), self._opponent,
+                                                                                  (-sys.maxsize - 1), sys.maxsize,
+                                                                                  queue, m, cpt)))
+            threads[cpt].start()
+            cpt += 1
+            self._board.pop()
+
+        for i in range(len(self._board.legal_moves())):
+            # Wait for all threads
+            threads[i].join()
+            # Search for the best move
+            (value, m) = queue.get()
             if value > maxx:
                 maxx = value
                 best_move = m
-            self._board.pop()
 
-        for m in range(len(self._board.legal_moves())):
-            thread.join()
         return best_move
 
-    def _negaThread (self,depth,player,alpha,beta,queue):
-        queue.put(self._negamax(depth,player,alpha,beta))
+    def _negaThread(self, board, depth, player, alpha, beta, queue, move, num):
+        value = -self._negamax(board, depth, player, alpha, beta)
+        queue.put([value, move])
 
-    def _negamax(self, depth, player, alpha, beta):
-        alpha_origin = alpha
-        self._table_usage += 1
-
-        # Transposition table lookup
-        current_hash = self._get_board_hash()
-        tt_entry = self._hash_table.get_table_entry(current_hash)
-        # Check in table whether or not we have to compute the best move
-        if tt_entry is not None and tt_entry.depth >= depth:
-            if tt_entry.flag == self._hash_table._EXACT:
-                return tt_entry.value
-            elif tt_entry.flag == self._hash_table._LOWERBOUND:
-                alpha = max(alpha, tt_entry.value)
-            else:  # tt_entry.flag == self._hash_table._UPPERBOUND:
-                beta = min(beta, tt_entry.value)
-
-            if alpha >= beta:
-                return tt_entry.value
-
-        self._table_usage -= 1
+    def _negamax(self, board, depth, player, alpha, beta):
+        # alpha_origin = alpha
+        # self._table_usage += 1
+        #
+        # # Transposition table lookup
+        # current_hash = self._get_board_hash(board)
+        # tt_entry = self._hash_table.get_table_entry(current_hash)
+        # # Check in table whether or not we have to compute the best move
+        # if tt_entry is not None and tt_entry.depth >= depth:
+        #     if tt_entry.flag == self._hash_table._EXACT:
+        #         return tt_entry.value
+        #     elif tt_entry.flag == self._hash_table._LOWERBOUND:
+        #         alpha = max(alpha, tt_entry.value)
+        #     else:  # tt_entry.flag == self._hash_table._UPPERBOUND:
+        #         beta = min(beta, tt_entry.value)
+        #
+        #     if alpha >= beta:
+        #         return tt_entry.value
+        #
+        # self._table_usage -= 1
 
         # If game is over or depth limit reached
-        if depth == 0 or self._board.is_game_over():
-            return Evaluator.eval(self._board, self._mycolor) * (-1 if player != self._mycolor else 1)
+        if depth == 0 or board.is_game_over():
+            return Evaluator.eval(board, self._mycolor) * (-1 if player != self._mycolor else 1)
 
-        color = self._board._flip(player)
+        color = board._flip(player)
 
         # If player cannot move, opponent turn
-        if not self._board.at_least_one_legal_move(player):
-            return -self._negamax(depth - 1, color, -beta, -alpha)
+        if not board.at_least_one_legal_move(player):
+            return -self._negamax(board, depth - 1, color, -beta, -alpha)
 
         value = - sys.maxsize - 1
-        for m in self._board.legal_moves():
-            self._board.push(m)
-            value = max(value, -self._negamax(depth - 1, color, -beta, -alpha))
-            self._board.pop()
+        for m in board.legal_moves():
+            board.push(m)
+            value = max(value, -self._negamax(board, depth - 1, color, -beta, -alpha))
+            board.pop()
             alpha = max(alpha, value)
             if alpha >= beta:
                 break  # Cutoff
 
         # Store in transposition table
-        tt_entry = TableEntry()
-        tt_entry.value = value
-        if value <= alpha_origin:
-            tt_entry.flag = self._hash_table._UPPERBOUND
-        elif value >= beta:
-            tt_entry.flag = self._hash_table._LOWERBOUND
-        else:
-            tt_entry.flag = self._hash_table._EXACT
-
-        tt_entry.depth = depth
-        with lock:
-            self._hash_table.store(current_hash, tt_entry)
+        # tt_entry = TableEntry()
+        # tt_entry.value = value
+        # if value <= alpha_origin:
+        #     tt_entry.flag = self._hash_table._UPPERBOUND
+        # elif value >= beta:
+        #     tt_entry.flag = self._hash_table._LOWERBOUND
+        # else:
+        #     tt_entry.flag = self._hash_table._EXACT
+        #
+        # tt_entry.depth = depth
+        # with lock:
+        #     self._hash_table.store(current_hash, tt_entry)
 
         return value
 
-    def _get_board_hash(self):
-        return hash(tuple([tuple(c) for c in self._board._board]))
+    @staticmethod
+    def _get_board_hash(board):
+        return hash(tuple([tuple(c) for c in board._board]))
