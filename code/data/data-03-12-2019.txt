@@ -58,3 +58,51 @@ Mewtwo won 45 % (9) of the time
 Draw 10 % (2) of the time
 ===============================
 
+On the 03-12-2019 16:10:51
+===[Results of Mewtwo vs Mew]===
+Mewtwo won 0 % (0) of the time
+Mew won 100 % (2) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Mew vs Mewtwo]===
+Mew won 50 % (1) of the time
+Mewtwo won 50 % (1) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 03-12-2019 16:14:27
+===[Results of Mewtwo vs Mew]===
+Mewtwo won 0 % (0) of the time
+Mew won 100 % (2) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Mew vs Mewtwo]===
+Mew won 0 % (0) of the time
+Mewtwo won 100 % (2) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 03-12-2019 16:20:05
+===[Results of Mewtwo vs Mew]===
+Mewtwo won 0 % (0) of the time
+Mew won 100 % (2) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Mew vs Mewtwo]===
+Mew won 50 % (1) of the time
+Mewtwo won 0 % (0) of the time
+Draw 50 % (1) of the time
+===============================
+
+On the 03-12-2019 16:45:22
+===[Results of Mewtwo vs Mew]===
+Mewtwo won 10 % (1) of the time
+Mew won 90 % (9) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Mew vs Mewtwo]===
+Mew won 70 % (7) of the time
+Mewtwo won 20 % (2) of the time
+Draw 10 % (1) of the time
+===============================
+

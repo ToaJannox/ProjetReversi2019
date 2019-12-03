@@ -4,23 +4,18 @@ import time
 import sys
 import copy
 import multiprocessing
-import _thread
-
 import Reversi
 import OpeningBook
 
 from random import randint
-from threading import Thread
-from threading import RLock
-from queue import Queue
 
 from Evaluator import Evaluator
 from playerInterface import *
 from TranspositionTable import *
 
-lock = RLock()
+lock = multiprocessing.RLock()
 
-class threadPlayer(PlayerInterface):
+class processPlayer(PlayerInterface):
 
     def __init__(self):
         self._board = Reversi.Board(10)
@@ -113,7 +108,7 @@ class threadPlayer(PlayerInterface):
             self._OB_active = False
 
         # minimax
-        return self._start_negamax(3)
+        return self._start_negamax(4)
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()
@@ -137,9 +132,10 @@ class threadPlayer(PlayerInterface):
             self._board.push(m)
             # value = -self._negamax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
             b = copy.deepcopy(self._board)
-            threads.append(multiprocessing.Process(target=self._negaThread, args=(b, (depth - 1), self._opponent,
+            process = multiprocessing.Process(target=self._negaThread, args=(b, (depth - 1), self._opponent,
                                                                                   (-sys.maxsize - 1), sys.maxsize,
-                                                                                  queue, m, cpt)))
+                                                                                  queue, m, cpt))
+            threads.append(process)
             threads[cpt].start()
             cpt += 1
             self._board.pop()
@@ -160,25 +156,25 @@ class threadPlayer(PlayerInterface):
         queue.put([value, move])
 
     def _negamax(self, board, depth, player, alpha, beta):
-        # alpha_origin = alpha
-        # self._table_usage += 1
-        #
-        # # Transposition table lookup
-        # current_hash = self._get_board_hash(board)
-        # tt_entry = self._hash_table.get_table_entry(current_hash)
-        # # Check in table whether or not we have to compute the best move
-        # if tt_entry is not None and tt_entry.depth >= depth:
-        #     if tt_entry.flag == self._hash_table._EXACT:
-        #         return tt_entry.value
-        #     elif tt_entry.flag == self._hash_table._LOWERBOUND:
-        #         alpha = max(alpha, tt_entry.value)
-        #     else:  # tt_entry.flag == self._hash_table._UPPERBOUND:
-        #         beta = min(beta, tt_entry.value)
-        #
-        #     if alpha >= beta:
-        #         return tt_entry.value
-        #
-        # self._table_usage -= 1
+        alpha_origin = alpha
+        self._table_usage += 1
+        
+        # Transposition table lookup
+        current_hash = self._get_board_hash(board)
+        tt_entry = self._hash_table.get_table_entry(current_hash)
+        # Check in table whether or not we have to compute the best move
+        if tt_entry is not None and tt_entry.depth >= depth:
+            if tt_entry.flag == self._hash_table._EXACT:
+                return tt_entry.value
+            elif tt_entry.flag == self._hash_table._LOWERBOUND:
+                alpha = max(alpha, tt_entry.value)
+            else:  # tt_entry.flag == self._hash_table._UPPERBOUND:
+                beta = min(beta, tt_entry.value)
+        
+            if alpha >= beta:
+                return tt_entry.value
+        
+        self._table_usage -= 1
 
         # If game is over or depth limit reached
         if depth == 0 or board.is_game_over():
@@ -200,19 +196,19 @@ class threadPlayer(PlayerInterface):
                 break  # Cutoff
 
         # Store in transposition table
-        # tt_entry = TableEntry()
-        # tt_entry.value = value
-        # if value <= alpha_origin:
-        #     tt_entry.flag = self._hash_table._UPPERBOUND
-        # elif value >= beta:
-        #     tt_entry.flag = self._hash_table._LOWERBOUND
-        # else:
-        #     tt_entry.flag = self._hash_table._EXACT
-        #
-        # tt_entry.depth = depth
-        # with lock:
-        #     self._hash_table.store(current_hash, tt_entry)
-
+        tt_entry = TableEntry()
+        tt_entry.value = value
+        if value <= alpha_origin:
+            tt_entry.flag = self._hash_table._UPPERBOUND
+        elif value >= beta:
+            tt_entry.flag = self._hash_table._LOWERBOUND
+        else:
+            tt_entry.flag = self._hash_table._EXACT
+        
+        tt_entry.depth = depth
+        lock.acquire()
+        self._hash_table.store(current_hash, tt_entry)
+        lock.release()
         return value
 
     @staticmethod
