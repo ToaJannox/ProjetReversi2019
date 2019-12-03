@@ -9,12 +9,14 @@ import OpeningBook
 
 from random import randint
 from threading import Thread
+from threading import RLock
 from queue import Queue
 
 from Evaluator import Evaluator
 from playerInterface import *
 from TranspositionTable import *
 
+lock = RLock()
 
 class threadPlayer(PlayerInterface):
 
@@ -110,7 +112,7 @@ class threadPlayer(PlayerInterface):
             self._OB_active = False
 
         # minimax
-        return self._start_negamax(4)
+        return self._start_negamax(3)
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()
@@ -197,7 +199,8 @@ class threadPlayer(PlayerInterface):
             tt_entry.flag = self._hash_table._EXACT
 
         tt_entry.depth = depth
-        self._hash_table.store(current_hash, tt_entry)
+        with lock:
+            self._hash_table.store(current_hash, tt_entry)
 
         return value
 

@@ -105,7 +105,7 @@ class hashPlayerV2(PlayerInterface):
             self._OB_active = False
 
         # minimax
-        return self._start_negamax(4)
+        return self._start_negamax(3)
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()

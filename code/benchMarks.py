@@ -69,15 +69,15 @@ def benchmark(n,players,writeToFile=False):
         dataFile.close()
 
     
-n = 1
+n = 20
 
 missingo = RandomPlayer()
 
 artikodin = myPlayer()
 sulfura = hashPlayer()
 electhor  = hashPlayerDepth()
-mewtwo = hashPlayerV2()
 
+mewtwo = hashPlayerV2()
 mew = threadPlayer()
 
 players = []
