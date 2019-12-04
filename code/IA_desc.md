@@ -25,5 +25,15 @@ Mewtwo:
 
 Mew:
     
-    File: threadPlayer.py
-    Algorithm: Frodon + multi-threads
+    File: processPlayer.py
+    Algorithm: Mewtwo + multi-process
+
+Entei:
+
+    File: processPlayerV2.py
+    Algorithm: Mewtwo + multi-process +EvaluatorPBS
+
+Raikou:
+    
+    File: not determined yet
+    Algorithm: Mewtwo + multi-process +EvaluatorVSMA
