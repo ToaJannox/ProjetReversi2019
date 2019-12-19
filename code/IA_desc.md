@@ -35,5 +35,5 @@ Entei:
 
 Raikou:
     
-    File: not determined yet
+    File: not processPlayerV3
     Algorithm: Mewtwo + multi-process +EvaluatorVSMA
