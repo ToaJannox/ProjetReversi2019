@@ -22,7 +22,7 @@ class EvaluatorVSMA:
         return EvaluatorVSMA._eval_corner(board,player,opponent) + EvaluatorVSMA._eval_mobility(board,player,opponent) + EvaluatorVSMA._eval_stability(board,player,opponent)
 
     @staticmethod
-    def _eval_partiy(board,player):
+    def _eval_partiy(board,player): 
         (whites,blacks) = board.get_nb_pieces()
         if player == board._WHITE:
             return 100*(whites-blacks)/(whites+blacks)
@@ -84,7 +84,11 @@ class EvaluatorVSMA:
             return 0
     
 
-    
+    # stability can be evaluated as follows
+    # if a piece is in a corner it's stable
+    # else if it is on a edge vertical or horizontal we check for the stablitily of neighbours above and under or on the left or right
+    # else if it has 4 stable neighbours in 4 differents direction (horizontal,vertical or diagonals)
+    # else we check that piece is the intersection of a complete vertical line, complete horizontal line and 2 complete diagonals
     @staticmethod
     def _eval_stability(board,player,opponent):
         boardSize = board.get_board_size()
@@ -97,6 +101,7 @@ class EvaluatorVSMA:
         upRightCorner = board._board[0][boardSize-1] 
         downLeftCorner = board._board[boardSize-1][0]
         downRightCorner =board._board[boardSize-1][boardSize-1]
+        # the first step is to check if the piece is in a corner. If so the piece is assured to be stable
 
         if upLeftCorner != board._EMPTY:
             if upLeftCorner == player:
@@ -126,13 +131,14 @@ class EvaluatorVSMA:
             else:
                 opponentStability += 1
             stableValues[boardSize-1][boardSize-1]=EvaluatorVSMA._STABLE
-
+        # if the piece is not in a corner, then we have to manually check the stability of every other piece
         if (playerStability+opponentStability)!=0:
             for x in range(0, boardSize):
                 for y in range(0, boardSize):
                     cell = board._board[x][y]
+                    # we of course don't check for already stable pieces (the corners)
                     if((cell !=board._EMPTY) and (stableValues[x][y]!=EvaluatorVSMA._STABLE)):
-                        
+                        # then we check for every piece that are on the edge of the board
                         if(x==0): #cell is on left edge
                             
                             if((stableValues[x][y-1]==EvaluatorVSMA._STABLE) or (stableValues[x][y+1]==EvaluatorVSMA._STABLE)):
@@ -154,21 +160,24 @@ class EvaluatorVSMA:
                                 if((stableValues[x-1][y]==EvaluatorVSMA._STABLE) or (stableValues[x+1][y]==EvaluatorVSMA._STABLE)):
                                     stableValues[x][y] = EvaluatorVSMA._STABLE
                                     continue
-                            else:
                                 
+                            else:
+                                # if the piece is neither on a edge or in a corner we check if it has 4 neighbours in 4 differents directions
                                 stableNeighbours = 0
                                 if((stableValues[x-1][y]==EvaluatorVSMA._STABLE) or (stableValues[x+1][y]==EvaluatorVSMA._STABLE)):
                                     stableNeighbours +=1
                                 if((stableValues[x][y-1]==EvaluatorVSMA._STABLE) or (stableValues[x][y+1]==EvaluatorVSMA._STABLE)):
                                     stableNeighbours +=1
-                                if((stableValues[x-1][y-1]==EvaluatorVSMA._STABLE)or
-                                   (stableValues[x-1][y+1]==EvaluatorVSMA._STABLE)or
-                                   (stableValues[x+1][y-1]==EvaluatorVSMA._STABLE)or
+                                if ((stableValues[x-1][y-1]==EvaluatorVSMA._STABLE) or
                                    (stableValues[x+1][y+1]==EvaluatorVSMA._STABLE)):
                                     stableNeighbours +=1
-                                if(stableNeighbours ==3):
+                                if ((stableValues[x-1][y+1]==EvaluatorVSMA._STABLE)or
+                                   (stableValues[x+1][y-1]==EvaluatorVSMA._STABLE)):
+                                    stableNeighbours +=1
+                                if(stableNeighbours ==4):
                                     stableValues[x][y]= EvaluatorVSMA._STABLE
                                     continue
+                                # if this is not enough we finally check if the piece is standing in the intersection of a complete column, line and 2 diagonals
                                 columnComplete = True
                                 i = 0
                                 while (i < boardSize) and columnComplete:

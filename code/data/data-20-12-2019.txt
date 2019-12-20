@@ -1,0 +1,36 @@
+On the 20-12-2019 10:38:04
+===[Results of Raikou vs Entei]===
+Raikou won 70 % (14) of the time
+Entei won 30 % (6) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Entei vs Raikou]===
+Entei won 60 % (12) of the time
+Raikou won 40 % (8) of the time
+Draw 0 % (0) of the time
+===============================
+
+On the 20-12-2019 10:44:09
+===[Results of Raikou vs Entei]===
+Raikou won 70 % (14) of the time
+Entei won 30 % (6) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Entei vs Raikou]===
+Entei won 35 % (7) of the time
+Raikou won 55 % (11) of the time
+Draw 10 % (2) of the time
+===============================
+
+On the 20-12-2019 11:00:49
+===[Results of Raikou vs Entei]===
+Raikou won 62 % (31) of the time
+Entei won 38 % (19) of the time
+Draw 0 % (0) of the time
+===============================
+===[Results of Entei vs Raikou]===
+Entei won 32 % (16) of the time
+Raikou won 68 % (34) of the time
+Draw 0 % (0) of the time
+===============================
+

@@ -71,7 +71,7 @@ def benchmark(n,players,writeToFile=False):
         dataFile.close()
 
     
-n = 20[x][y]
+n = 50
 
 missingno = RandomPlayer()
 
