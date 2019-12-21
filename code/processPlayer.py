@@ -2,7 +2,6 @@
 
 import time
 import sys
-import copy
 import multiprocessing
 import Reversi
 import OpeningBook
@@ -15,7 +14,11 @@ from TranspositionTable import *
 
 lock = multiprocessing.RLock()
 
+
 class processPlayer(PlayerInterface):
+
+    _MAX_TIME = 300
+    _LIMIT_TIME = 240
 
     def __init__(self):
         self._board = Reversi.Board(10)
@@ -25,6 +28,10 @@ class processPlayer(PlayerInterface):
         self._move_history = []
         self._hash_table = TranspositionTable()
         self._table_usage = 0
+        self._num_cores = multiprocessing.cpu_count()
+        self._evaluator = Evaluator()
+        self._negamax_depth = 3
+        self._time = 0
 
     def getPlayerName(self):
         return "Mew"
@@ -67,6 +74,12 @@ class processPlayer(PlayerInterface):
         print("Used table %d times" % self._table_usage)
 
     def _play(self):
+        if self._time > self._LIMIT_TIME:  # TODO
+            self._negamax_depth = 2
+
+        # Start time
+        current_time = time.time()
+
         # Killer move detection
         # # Corner
         max_value = - sys.maxsize - 1
@@ -79,7 +92,7 @@ class processPlayer(PlayerInterface):
             self._board.push(m)
             (_, x, y) = m
             if [x, y] in corners:
-                max_value = max(max_value, Evaluator.eval(self._board, self._mycolor))
+                max_value = max(max_value, self._evaluator.eval(self._board, self._mycolor))
                 best_move = m
             self._board.pop()
 
@@ -92,7 +105,7 @@ class processPlayer(PlayerInterface):
         for m in self._board.legal_moves():
             self._board.push(m)
             if not self._board.at_least_one_legal_move(self._opponent):
-                max_value = max(max_value, Evaluator.eval(self._board, self._mycolor))
+                max_value = max(max_value, self._evaluator.eval(self._board, self._mycolor))
                 best_move = m
             self._board.pop()
 
@@ -107,8 +120,14 @@ class processPlayer(PlayerInterface):
             #  Else
             self._OB_active = False
 
-        # minimax
-        return self._start_negamax(3)
+        # negamax
+        move = self._start_negamax(self._negamax_depth)
+
+        # Compute time
+        print('\x1b[0;30;47m' + str(self._time) + '\x1b[0m')
+        self._time += time.time() - current_time
+
+        return move
 
     def _get_result(self):
         (nb_whites, nb_blacks) = self._board.get_nb_pieces()
@@ -126,23 +145,29 @@ class processPlayer(PlayerInterface):
         maxx = - sys.maxsize - 1
         best_move = None
         queue = multiprocessing.Queue()
-        threads = []
-        cpt = 0
-        for m in self._board.legal_moves():
-            self._board.push(m)
-            # value = -self._negamax(depth - 1, self._opponent, -sys.maxsize - 1, sys.maxsize)
-            b = copy.deepcopy(self._board)
-            process = multiprocessing.Process(target=self._negaThread, args=(b, (depth - 1), self._opponent,
-                                                                                  (-sys.maxsize - 1), sys.maxsize,
-                                                                                  queue, m, cpt))
-            threads.append(process)
-            threads[cpt].start()
-            cpt += 1
-            self._board.pop()
+        workers = []
+        moves = []
 
-        for i in range(len(self._board.legal_moves())):
-            # Wait for all threads
-            threads[i].join()
+        # Split moves into multiple groups
+        i = 0
+        for m in self._board.legal_moves():
+            if i < self._num_cores:
+                moves.append([])
+            moves[i % self._num_cores].append(m)
+            i += 1
+
+        # Launch multiple processes
+        for i in range(len(moves)):
+            process = multiprocessing.Process(target=self._start_thread, args=((depth - 1), self._opponent,
+                                                                               (-sys.maxsize - 1), sys.maxsize,
+                                                                               queue, moves[i]))
+            workers.append(process)
+            workers[i].start()
+
+        # Get all the results and find the best
+        for i in range(len(moves)):
+            # Wait for all processes
+            workers[i].join()
             # Search for the best move
             (value, m) = queue.get()
             if value > maxx:
@@ -151,14 +176,18 @@ class processPlayer(PlayerInterface):
 
         return best_move
 
-    def _negaThread(self, board, depth, player, alpha, beta, queue, move, num):
-        value = -self._negamax(board, depth, player, alpha, beta)
-        queue.put([value, move])
+    def _start_thread(self, depth, player, alpha, beta, queue, moves):
+        print('\x1b[0;30;47m       ' + str(len(moves)) + '      \x1b[0m')
+        for m in moves:
+            self._board.push(m)
+            value = -self._negamax(self._board, depth, player, alpha, beta)
+            self._board.pop()
+            queue.put([value, m])  # Put the value and the corresponding move into the queue
 
     def _negamax(self, board, depth, player, alpha, beta):
         alpha_origin = alpha
         self._table_usage += 1
-        
+
         # Transposition table lookup
         current_hash = self._get_board_hash(board)
         tt_entry = self._hash_table.get_table_entry(current_hash)
@@ -170,15 +199,15 @@ class processPlayer(PlayerInterface):
                 alpha = max(alpha, tt_entry.value)
             else:  # tt_entry.flag == self._hash_table._UPPERBOUND:
                 beta = min(beta, tt_entry.value)
-        
+
             if alpha >= beta:
                 return tt_entry.value
-        
+
         self._table_usage -= 1
 
         # If game is over or depth limit reached
         if depth == 0 or board.is_game_over():
-            return Evaluator.eval(board, self._mycolor) * (-1 if player != self._mycolor else 1)
+            return self._evaluator.eval(board, self._mycolor) * (-1 if player != self._mycolor else 1)
 
         color = board._flip(player)
 
@@ -204,7 +233,7 @@ class processPlayer(PlayerInterface):
             tt_entry.flag = self._hash_table._LOWERBOUND
         else:
             tt_entry.flag = self._hash_table._EXACT
-        
+
         tt_entry.depth = depth
         lock.acquire()
         self._hash_table.store(current_hash, tt_entry)

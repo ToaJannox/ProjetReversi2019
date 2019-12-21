@@ -26,16 +26,15 @@ class EvaluatorPBS:
                       [  5, -2,-1,-1,-1,-1,-1,-1, -2,  5],
                       [ 10, -2,-1,-1,-1,-1,-1,-1, -2, 10],
                       [-20,-50,-2,-2,-2,-2,-2,-2,-50,-20],
-                      [100,-20,10, 5, 5, 5, 5,10,-20,100]
-                        ]
+                      [100,-20,10, 5, 5, 5, 5,10,-20,100]]
     
     movePlayed = 0
     @staticmethod
     
     def _get_game_phase(board):
-        if EvaluatorPBS.movePlayed <39:
+        if EvaluatorPBS.movePlayed < 39:
             return GamePhase.EARLY_GAME
-        elif EvaluatorPBS.movePlayed>=39 and EvaluatorPBS.movePlayed<71:
+        elif 39 <= EvaluatorPBS.movePlayed < 71:
             return GamePhase.MID_GAME
         else:
             return GamePhase.LATE_GAME
