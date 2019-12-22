@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
-#Thanks to:
-#Vaishnavi Sannidhanam 
+# Thanks to:
+# Vaishnavi Sannidhanam
 # and Muthukaruppan Annamalai
 
 from enum import Enum
 import Reversi
 
 
-
-class EvaluatorVSMA:
+class Evaluator:
     _STABLE = 1
     _UNSTABLE = -1
 
@@ -18,11 +17,11 @@ class EvaluatorVSMA:
         opponent = board._flip(player)
 
         if board.is_game_over():
-            return EvaluatorVSMA._eval_partiy(board,player)
-        return EvaluatorVSMA._eval_corner(board,player,opponent) + EvaluatorVSMA._eval_mobility(board,player,opponent) + EvaluatorVSMA._eval_stability(board,player,opponent)
+            return Evaluator._eval_parity(board, player)
+        return Evaluator._eval_corner(board, player, opponent) + Evaluator._eval_mobility(board, player, opponent) + Evaluator._eval_stability(board, player, opponent)
 
     @staticmethod
-    def _eval_partiy(board,player): 
+    def _eval_parity(board, player):
         (whites,blacks) = board.get_nb_pieces()
         if player == board._WHITE:
             return 100*(whites-blacks)/(whites+blacks)
@@ -82,7 +81,6 @@ class EvaluatorVSMA:
             return 100 * (playerCorners - opponentCorners) / (playerCorners + opponentCorners)
         else :
             return 0
-    
 
     # stability can be evaluated as follows
     # if a piece is in a corner it's stable
@@ -92,7 +90,7 @@ class EvaluatorVSMA:
     @staticmethod
     def _eval_stability(board,player,opponent):
         boardSize = board.get_board_size()
-        stableValues = [[EvaluatorVSMA._UNSTABLE for i in range(0,boardSize)] for j in range(0,boardSize)]
+        stableValues = [[Evaluator._UNSTABLE for i in range(0, boardSize)] for j in range(0, boardSize)]
 
         playerStability = 0
         opponentStability= 0
@@ -108,21 +106,21 @@ class EvaluatorVSMA:
                 playerStability += 1
             else:
                 opponentStability += 1
-            stableValues[0][0]=EvaluatorVSMA._STABLE
+            stableValues[0][0]=Evaluator._STABLE
 
         if upRightCorner != board._EMPTY:
             if upRightCorner == player:
                 playerStability += 1
             else:
                 opponentStability += 1
-            stableValues[0][boardSize-1]=EvaluatorVSMA._STABLE
+            stableValues[0][boardSize-1]=Evaluator._STABLE
 
         if downLeftCorner != board._EMPTY:
             if downLeftCorner == player:
                 playerStability += 1
             else:
                 opponentStability += 1
-            stableValues[boardSize-1][0]=EvaluatorVSMA._STABLE
+            stableValues[boardSize-1][0]=Evaluator._STABLE
 
 
         if downRightCorner != board._EMPTY:
@@ -130,52 +128,52 @@ class EvaluatorVSMA:
                 playerStability += 1
             else:
                 opponentStability += 1
-            stableValues[boardSize-1][boardSize-1]=EvaluatorVSMA._STABLE
+            stableValues[boardSize-1][boardSize-1]=Evaluator._STABLE
         # if the piece is not in a corner, then we have to manually check the stability of every other piece
         if (playerStability+opponentStability)!=0:
             for x in range(0, boardSize):
                 for y in range(0, boardSize):
                     cell = board._board[x][y]
                     # we of course don't check for already stable pieces (the corners)
-                    if((cell !=board._EMPTY) and (stableValues[x][y]!=EvaluatorVSMA._STABLE)):
+                    if((cell !=board._EMPTY) and (stableValues[x][y] != Evaluator._STABLE)):
                         # then we check for every piece that are on the edge of the board
                         if(x==0): #cell is on left edge
                             
-                            if((stableValues[x][y-1]==EvaluatorVSMA._STABLE) or (stableValues[x][y+1]==EvaluatorVSMA._STABLE)):
-                                stableValues[x][y] = EvaluatorVSMA._STABLE
+                            if((stableValues[x][y-1] == Evaluator._STABLE) or (stableValues[x][y + 1] == Evaluator._STABLE)):
+                                stableValues[x][y] = Evaluator._STABLE
                                 continue
 
 
                         elif(x==boardSize-1): #cell is on right edge
-                            if((stableValues[x][y-1]==EvaluatorVSMA._STABLE) or (stableValues[x][y+1]==EvaluatorVSMA._STABLE)):
-                                stableValues[x][y] = EvaluatorVSMA._STABLE
+                            if((stableValues[x][y-1] == Evaluator._STABLE) or (stableValues[x][y + 1] == Evaluator._STABLE)):
+                                stableValues[x][y] = Evaluator._STABLE
                                 continue
 
                         else:
                             if(y==0): #cell is on top edge
-                                if((stableValues[x-1][y]==EvaluatorVSMA._STABLE) or (stableValues[x+1][y]==EvaluatorVSMA._STABLE)):
-                                    stableValues[x][y] = EvaluatorVSMA._STABLE
+                                if((stableValues[x-1][y] == Evaluator._STABLE) or (stableValues[x + 1][y] == Evaluator._STABLE)):
+                                    stableValues[x][y] = Evaluator._STABLE
                                     continue
                             elif(y==boardSize-1): #cell is on on bottom edge
-                                if((stableValues[x-1][y]==EvaluatorVSMA._STABLE) or (stableValues[x+1][y]==EvaluatorVSMA._STABLE)):
-                                    stableValues[x][y] = EvaluatorVSMA._STABLE
+                                if((stableValues[x-1][y] == Evaluator._STABLE) or (stableValues[x + 1][y] == Evaluator._STABLE)):
+                                    stableValues[x][y] = Evaluator._STABLE
                                     continue
                                 
                             else:
                                 # if the piece is neither on a edge or in a corner we check if it has 4 neighbours in 4 differents directions
                                 stableNeighbours = 0
-                                if((stableValues[x-1][y]==EvaluatorVSMA._STABLE) or (stableValues[x+1][y]==EvaluatorVSMA._STABLE)):
+                                if((stableValues[x-1][y] == Evaluator._STABLE) or (stableValues[x + 1][y] == Evaluator._STABLE)):
                                     stableNeighbours +=1
-                                if((stableValues[x][y-1]==EvaluatorVSMA._STABLE) or (stableValues[x][y+1]==EvaluatorVSMA._STABLE)):
+                                if((stableValues[x][y-1] == Evaluator._STABLE) or (stableValues[x][y + 1] == Evaluator._STABLE)):
                                     stableNeighbours +=1
-                                if ((stableValues[x-1][y-1]==EvaluatorVSMA._STABLE) or
-                                   (stableValues[x+1][y+1]==EvaluatorVSMA._STABLE)):
+                                if ((stableValues[x-1][y-1] == Evaluator._STABLE) or
+                                   (stableValues[x+1][y+1] == Evaluator._STABLE)):
                                     stableNeighbours +=1
-                                if ((stableValues[x-1][y+1]==EvaluatorVSMA._STABLE)or
-                                   (stableValues[x+1][y-1]==EvaluatorVSMA._STABLE)):
+                                if ((stableValues[x-1][y+1] == Evaluator._STABLE)or
+                                   (stableValues[x+1][y-1] == Evaluator._STABLE)):
                                     stableNeighbours +=1
                                 if(stableNeighbours ==4):
-                                    stableValues[x][y]= EvaluatorVSMA._STABLE
+                                    stableValues[x][y]= Evaluator._STABLE
                                     continue
                                 # if this is not enough we finally check if the piece is standing in the intersection of a complete column, line and 2 diagonals
                                 columnComplete = True
@@ -211,11 +209,11 @@ class EvaluatorVSMA:
                                     i+=1
                                 if( (not diag1Complete) or (not diag2Complete)):
                                     continue
-                                stableValues[x][y]=EvaluatorVSMA._STABLE;
+                                stableValues[x][y]=Evaluator._STABLE;
 
             for x in range(0,boardSize):                    
                 for y in range(0,boardSize):
-                    if(stableValues[x][y]==EvaluatorVSMA._STABLE):
+                    if(stableValues[x][y]==Evaluator._STABLE):
                         if(board._board[x][y]==player):
                             playerStability+=1
                         else:

@@ -8,14 +8,14 @@ import OpeningBook
 
 from random import randint
 
-from EvaluatorVSMA import EvaluatorVSMA
+from Evaluator import Evaluator
 from playerInterface import *
 from TranspositionTable import *
 
 lock = multiprocessing.RLock()
 
 
-class playerV4(PlayerInterface):
+class myPlayer(PlayerInterface):
 
     _MAX_TIME = 300
     _LIMIT_TIME_FIRST = 240
@@ -30,8 +30,7 @@ class playerV4(PlayerInterface):
         self._hash_table = TranspositionTable()
         self._table_usage = 0
         self._num_cores = multiprocessing.cpu_count()
-        # self._num_cores = 1
-        self._evaluator = EvaluatorVSMA()
+        self._evaluator = Evaluator()
         self._negamax_depth = 4
         self._time = 0
         self._slowCount = 0
@@ -74,8 +73,8 @@ class playerV4(PlayerInterface):
             print("I won!!!")
         else:
             print("I lost :(!!")
+
         print("Used table %d times" % self._table_usage)
-        print("Was out of time  %d times" % self._table_usage)
 
     def _play(self):
         # Compute negamax depth, important for championship with 5 minutes max play time / player
