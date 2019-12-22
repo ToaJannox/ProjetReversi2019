@@ -34,6 +34,10 @@ Entei:
     Algorithm: Mewtwo + multi-process +EvaluatorPBS
 
 Raikou:
-    
-    File: not processPlayerV3
+
+    File:  processPlayerV3
     Algorithm: Mewtwo + multi-process +EvaluatorVSMA
+
+Suicune:
+
+        File: playerV4

@@ -1,12 +1,8 @@
 from localGame import *
 
 from RandomPlayer import RandomPlayer
-from myPlayer import myPlayer
-from hashPlayer import hashPlayer
-from hashPlayerDepth import hashPlayerDepth
-from hashPlayerV2 import hashPlayerV2
-from processPlayer import processPlayer
-from processPlayerV2 import processPlayerV2
+
+from playerV4 import playerV4
 from processPlayerV3 import processPlayerV3
 
 from itertools import permutations
@@ -27,7 +23,6 @@ def benchmark(n,players,writeToFile=False):
             players.append(player1)
             players.append(player2)
             result = localGame(players)
-            # result =0
             matchData[result] +=1
             players.clear()
             print("Game ",j+1," done")
@@ -71,22 +66,18 @@ def benchmark(n,players,writeToFile=False):
         dataFile.close()
 
     
-n = 50
+n = 20
 
 missingno = RandomPlayer()
 
-artikodin = myPlayer()
-sulfura = hashPlayer()
-electhor  = hashPlayerDepth()
-mewtwo = hashPlayerV2()
 
-mew = processPlayer()
-entei = processPlayerV2()
 raikou = processPlayerV3()
+suicune = playerV4()
+
 
 players = []
-players.append(raikou)
-players.append(entei)
+players.append(missingno)
+players.append(suicune)
 
 
 

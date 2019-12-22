@@ -8,14 +8,14 @@ import OpeningBook
 
 from random import randint
 
-from Evaluator import Evaluator
+from EvaluatorVSMA import EvaluatorVSMA
 from playerInterface import *
 from TranspositionTable import *
 
 lock = multiprocessing.RLock()
 
 
-class processPlayer(PlayerInterface):
+class playerV4(PlayerInterface):
 
     _MAX_TIME = 300
     _LIMIT_TIME = 240
@@ -28,13 +28,15 @@ class processPlayer(PlayerInterface):
         self._move_history = []
         self._hash_table = TranspositionTable()
         self._table_usage = 0
-        self._num_cores = multiprocessing.cpu_count()
-        self._evaluator = Evaluator()
+        # self._num_cores = multiprocessing.cpu_count()
+        self._num_cores = 1
+        self._evaluator = EvaluatorVSMA()
         self._negamax_depth = 3
         self._time = 0
+        self._slowCount = 0
 
     def getPlayerName(self):
-        return "Mew"
+        return "Suicune"
 
     def getPlayerMove(self):
         if self._board.is_game_over():
@@ -72,6 +74,7 @@ class processPlayer(PlayerInterface):
         else:
             print("I lost :(!!")
         print("Used table %d times" % self._table_usage)
+        print("Was out of time  %d times" % self._table_usage)
 
     def _play(self):
         if self._time > self._LIMIT_TIME:  # TODO
@@ -168,11 +171,12 @@ class processPlayer(PlayerInterface):
         for i in range(len(moves)):
             # Wait for all processes
             workers[i].join()
-            # Search for the best move
-            (value, m) = queue.get()
-            if value > maxx:
-                maxx = value
-                best_move = m
+            for j in range(len(moves[i])):
+                # Search for the best move
+                (value, m) = queue.get()
+                if value > maxx:
+                    maxx = value
+                    best_move = m
 
         return best_move
 
