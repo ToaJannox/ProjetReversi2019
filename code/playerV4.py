@@ -18,7 +18,8 @@ lock = multiprocessing.RLock()
 class playerV4(PlayerInterface):
 
     _MAX_TIME = 300
-    _LIMIT_TIME = 240
+    _LIMIT_TIME_FIRST = 240
+    _LIMIT_TIME_SECOND = 280
 
     def __init__(self):
         self._board = Reversi.Board(10)
@@ -28,10 +29,10 @@ class playerV4(PlayerInterface):
         self._move_history = []
         self._hash_table = TranspositionTable()
         self._table_usage = 0
-        # self._num_cores = multiprocessing.cpu_count()
-        self._num_cores = 1
+        self._num_cores = multiprocessing.cpu_count()
+        # self._num_cores = 1
         self._evaluator = EvaluatorVSMA()
-        self._negamax_depth = 3
+        self._negamax_depth = 4
         self._time = 0
         self._slowCount = 0
 
@@ -77,8 +78,11 @@ class playerV4(PlayerInterface):
         print("Was out of time  %d times" % self._table_usage)
 
     def _play(self):
-        if self._time > self._LIMIT_TIME:  # TODO
+        # Compute negamax depth, important for championship with 5 minutes max play time / player
+        if self._time > self._LIMIT_TIME_SECOND:
             self._negamax_depth = 2
+        elif self._time > self._LIMIT_TIME_FIRST:
+            self._negamax_depth = 3
 
         # Start time
         current_time = time.time()
@@ -127,7 +131,6 @@ class playerV4(PlayerInterface):
         move = self._start_negamax(self._negamax_depth)
 
         # Compute time
-        print('\x1b[0;30;47m' + str(self._time) + '\x1b[0m')
         self._time += time.time() - current_time
 
         return move
@@ -181,7 +184,6 @@ class playerV4(PlayerInterface):
         return best_move
 
     def _start_thread(self, depth, player, alpha, beta, queue, moves):
-        print('\x1b[0;30;47m       ' + str(len(moves)) + '      \x1b[0m')
         for m in moves:
             self._board.push(m)
             value = -self._negamax(self._board, depth, player, alpha, beta)
